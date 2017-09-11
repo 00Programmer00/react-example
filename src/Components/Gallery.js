@@ -6,7 +6,7 @@ export default class UserList extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {photo: [],albumId: '', photoIndex: 0,
+        this.state = {photo: [],albumId: [],albums: [],photoIndex: 0,
             isOpen: false};
         this.onChange = this.onChange.bind(this);
 
@@ -14,30 +14,32 @@ export default class UserList extends Component {
 
     onChange(e) {
         this.setState({[e.target.name]: e.target.value});
+        let favorites = [e.target.value];
+        let filtered = this.state.photo.filter(ph => favorites.indexOf(ph.albumId) >= 0);
+        this.setState({photo: filtered});
+    }
 
+    albums(){
+        return axios.get('https://jsonplaceholder.typicode.com/albums', )
+            .then( (response) => {
+                console.log(response.data);
+                this.setState({albums: response.data});
+            });
     }
 
     componentDidMount() {
-        this.UserList();
+        this.PhotoList();
         this.albums();
+
     }
 
-    UserList() {
+    PhotoList() {
 
         return axios.get('https://jsonplaceholder.typicode.com/photos?albumId=1&albumId=2', )
             .then( (response) => {
                 console.log(response.data);
                 this.setState({photo: response.data});
             });
-    }
-
-    albums() {
-        return axios.get('https://jsonplaceholder.typicode.com/albums', )
-            .then( (response) => {
-                console.log(response.data);
-                this.setState({albums: response.data});
-            });
-
     }
 
     render() {
@@ -50,9 +52,10 @@ export default class UserList extends Component {
             images.push(item.url);
             let title = '';
 
-            axios.get('https://jsonplaceholder.typicode.com/albums?id='+item.albumId).then((response) => {
-                title = response.data[0].title;
-            });
+
+
+            let album = this.state.albums ? this.state.albums.find(album => album.id === item.albumId) : null;
+            title = album ? album.title : 'загрузка...';
 
             return <div className="row photo" key={i}>
                 <div className="col-md-4">
@@ -69,10 +72,7 @@ export default class UserList extends Component {
                     <hr/>
                     <h3>Description : {item.title}</h3>
                 </div>
-
             </div>
-
-
         });
 
         return <div>
@@ -86,8 +86,8 @@ export default class UserList extends Component {
                         name="albumId"
                     >
                         <option value="" disabled>Choose album</option>
-                        <option value='album 1'>album 1</option>
-                        <option value='album 2'>album 2</option>
+                        <option value='1'>album 1</option>
+                        <option value='2'>album 2</option>
 
                     </select>
                 </div>

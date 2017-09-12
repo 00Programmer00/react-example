@@ -88,27 +88,8 @@ export default class Posts extends React.Component{
 		this.setState({posts: posts});
 	}
 
-	// sortPostsById(desc = false){
-	// 	let posts = this.state.posts.sort((a, b) => a.id - b.id);
-	// 	this.setState({posts: posts});
-	// }
-
 	sortPostsById(desc = false){
 		let posts = this.state.posts.sort((a, b) => (desc ? a.id : b.id) - (desc ? b.id : a.id));
 		this.setState({posts: posts});
 	}
-
-	// sortPostsById(desc = false){
-	// 	if (desc === true){
-	// 		function compareNumbers(a, b){
-	// 	    	return a - b;
-	// 		}
-	// 	} else {
-	// 		function compareNumbers(a, b){
-	// 	    	return b - a;
-	// 		}
-	// 	}
-	// 	let posts = this.state.posts.sort(compareNumbers);
-	// 	this.setState({posts: posts});
-	// }
 }

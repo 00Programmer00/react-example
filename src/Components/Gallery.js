@@ -6,7 +6,7 @@ export default class UserList extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {photo: [],albumId: [],albums: [],photoIndex: 0,
+        this.state = {photo: [], albumId: [], albums: [], photoIndex: 0,
             isOpen: false};
         this.onChange = this.onChange.bind(this);
 
@@ -16,10 +16,13 @@ export default class UserList extends Component {
         this.setState({albumId: Number(e.target.value)});
     }
 
+    // onClick(id) {
+    //     this.setState({albumId: id});
+    // }
+
     albums(){
-        return axios.get('https://jsonplaceholder.typicode.com/albums', )
+        return axios.get('https://jsonplaceholder.typicode.com/albums?_limit=10')
             .then( (response) => {
-                console.log(response.data);
                 this.setState({albums: response.data});
             });
     }
@@ -27,66 +30,86 @@ export default class UserList extends Component {
     componentDidMount() {
         this.PhotoList();
         this.albums();
-
     }
 
     PhotoList() {
 
-        return axios.get('https://jsonplaceholder.typicode.com/photos?albumId=1&albumId=2', )
+        return axios.get('https://jsonplaceholder.typicode.com/photos?_limit=500')
             .then( (response) => {
-                console.log(response.data);
                 this.setState({photo: response.data});
             });
     }
 
     render() {
-        const {
-            photoIndex,
-            isOpen,
-        } = this.state;
+        const {photoIndex, isOpen} = this.state;
         const images = [];
-        const photos = this.state.photo.filter(ph => !this.state.albumId || ph.albumId == this.state.albumId).map((item, i) => {
-            images.push(item.url);
-            let title = '';
+        console.log('albumId', this.state.albumId);
+        const photos = this.state.photo.filter(ph => !this.state.albumId || ph.albumId === this.state.albumId)
+            .map((item, i) => {
+                images.push(item.url);
+                let title = '';
 
-            let album = this.state.albums ? this.state.albums.find(album => album.id === item.albumId) : null;
-            title = album ? album.title : 'загрузка...';
+                let album = this.state.albums ? this.state.albums.find(album => album.id === item.albumId) : null;
+                title = album ? album.title : 'загрузка...';
 
-            return <div className="row photo" key={i}>
-                <div className="col-md-4">
-                    <img src={item.thumbnailUrl} alt={item.title} key={i}/>
-                    <button className="btn btn-primary preview"
-                            type="button"
-                            onClick={() => this.setState({ isOpen: true })}
-                    >
-                        Preview
-                    </button>
+                return <div className="row photo" key={i}>
+                    <div className="col-md-4">
+                        <img src={item.thumbnailUrl} alt={item.title} key={i}/>
+                        <button className="btn btn-primary preview"
+                                type="button"
+                                onClick={() => this.setState({ isOpen: true })}>
+                            Preview
+                        </button>
+                    </div>
+                    <div className="col-md-8">
+                        <h3>Album : {title}</h3>
+                        <hr/>
+                        <h3>Description : {item.title}</h3>
+                    </div>
                 </div>
-                <div className="col-md-8">
-                    <h3>Album : {title}</h3>
-                    <hr/>
-                    <h3>Description : {item.title}</h3>
-                </div>
-            </div>
-        });
+            });
+        
+        // const albums = this.state.albums.map((album, i) => {
+        //     const photosNmb = (this.state.photo.filter(photo => album.id === photo.albumId)).length
+        //     return (
+        //         <div key={i} className="container">
+        //             <ul>
+        //                 <li>{album.id} - {album.title} (
+        //                     <span 
+        //                     onClick={this.onClick.bind(this, album.id)}>
+        //                         {photosNmb}
+        //                     </span> photos)
+        //                 </li>
+        //             </ul>
+        //         </div>
+        //     )
+        // })
+
+        const albums = this.state.albums.map((album, i) => {
+            const photosNmb = (this.state.photo.filter(photo => album.id === photo.albumId)).length
+            return <option key={i} value={album.id}>
+                        {album.id} - {album.title} ({photosNmb} photos)
+                    </option>
+        })
 
         return <div>
             <div className="container main">
+                <div>
+                    <h3>Albums List</h3>
+                    <br />
+                    {albums} 
+                    <hr />
+                </div>
                 <div className="row">
-                    <label className="control-label">Sort by albums</label>
+                    <h3>Choose album</h3>
                     <select
                         onChange={this.onChange}
                         value={this.state.albumId}
-                        className="form-control select"
-                        name="albumId"
-                    >
-                        <option value="" disabled>Choose album</option>
-                        <option value='1'>album 1</option>
-                        <option value='2'>album 2</option>
-
+                        name="albumId">
+                            <option value="" disabled>Choose album</option>
+                            {albums}
                     </select>
                 </div>
-
                 {photos}
             </div>
             {isOpen &&

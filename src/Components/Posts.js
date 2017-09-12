@@ -1,10 +1,14 @@
 import React from 'react';
 import axios from 'axios';
+import rating from '../data/users';
+import map from 'lodash/map'
 
 export default class Posts extends React.Component{
     constructor(props) {
 	    super(props);
-	    this.state = {posts: [], search: ''};
+	    this.state = {posts: [], search: '', page: ''};
+
+	    this.onChange = this.onChange.bind(this);
 	} 
 
     componentWillMount() {
@@ -12,11 +16,28 @@ export default class Posts extends React.Component{
     }
 
 	PostsList() {
-        return axios.get('https://jsonplaceholder.typicode.com/posts')
+        axios.get('https://jsonplaceholder.typicode.com/posts?_page=1&_limit=7')
             .then((response) => {
                 this.setState({posts: response.data});
             });
     }
+
+    onChange(e){
+    	e.preventDefault();
+        axios.get('https://jsonplaceholder.typicode.com/posts')
+            .then((response) => {
+                this.setState({posts: response.data});
+            });
+    	axios.get('https://jsonplaceholder.typicode.com/posts?userId='+e.target.value)
+			.then((response) => {
+    		let userPosts = response.data;
+    		userPosts = userPosts.map(userPost => userPost.userId);
+    		let filtered = this.state.posts.filter(post => userPosts.indexOf(post.userId) >= 0);
+			this.setState({posts: filtered});
+		})
+	}
+
+
 
     render(){
 		const posts = this.searchPosts(this.state.posts).map((post, i) => {
@@ -29,6 +50,17 @@ export default class Posts extends React.Component{
                 </ul>
             </div>
         });
+
+        const options = map ( rating, (val,key)=>
+			<option key={val} value={val}>{key}</option>
+        );
+
+        function loadPage(page){
+            axios.get('https://jsonplaceholder.typicode.com/posts?_page='+page+'&_limit=7')
+				.then((response) => {
+					this.setState({posts: response.data});
+			});
+        }
 
         return(
         	<div id="layout-content" className="layout-content-wrapper">
@@ -49,7 +81,45 @@ export default class Posts extends React.Component{
 				        <span className="sort-feature" 
 				        		onClick={this.sortPostsById.bind(this, false)}>&darr;</span>
 		      		</div>
+
+					<label className="control-label">Filter by users</label>
+					<select
+						onChange={this.onChange}
+						value={this.state.albumId}
+						className="form-control select"
+						name="albumId"
+					>
+						<option value="" disabled>Choose user</option>
+						{options}
+					</select>
                 	{ posts }
+                	<div className="row">
+						<div className="col-md-6 col-md-offset-4">
+							<nav aria-label="Page navigation example">
+
+								<ul className="pagination">
+									<li onClick={ loadPage.bind(this, 1)}><a href="#"  >1</a></li>
+									<li onClick={ loadPage.bind(this, 2)}><a href="#"  >2</a></li>
+									<li onClick={ loadPage.bind(this, 3)}><a href="#"  >3</a></li>
+									<li onClick={ loadPage.bind(this, 4)}><a href="#"  >4</a></li>
+									<li onClick={ loadPage.bind(this, 5)}><a href="#"  >5</a></li>
+									<li onClick={ loadPage.bind(this, 6)}><a href="#"  >6</a></li>
+									<li onClick={ loadPage.bind(this, 7)}><a href="#"  >7</a></li>
+									<li onClick={ loadPage.bind(this, 8)}><a href="#"  >8</a></li>
+									<li onClick={ loadPage.bind(this, 9)}><a href="#"  >9</a></li>
+									<li onClick={ loadPage.bind(this, 10)}><a href="#"  >10</a></li>
+									<li onClick={ loadPage.bind(this, 11)}><a href="#"  >11</a></li>
+									<li onClick={ loadPage.bind(this, 12)}><a href="#"  >12</a></li>
+									<li onClick={ loadPage.bind(this, 13)}><a href="#"  >13</a></li>
+									<li onClick={ loadPage.bind(this, 14)}><a href="#"  >14</a></li>
+									<li onClick={ loadPage.bind(this, 15)}><a href="#"  >15</a></li>
+								</ul>
+
+							</nav>
+						</div>
+					</div>
+
+
                 </div>
             </div>
         )
@@ -58,7 +128,7 @@ export default class Posts extends React.Component{
   	handleSearch(e){
 	    e.preventDefault();
 	    this.onSearch(this.refs.searchItem.value);
-	    var form = document.getElementById("search-post");
+	    let form = document.getElementById("search-post");
 	    form.reset();
 	}
 
@@ -84,31 +154,14 @@ export default class Posts extends React.Component{
 		    if(a.title < b.title) return desc ? 1 : -1;
 		    if(a.title > b.title) return desc ? -1 : 1;
 	    	return 0;
-		})
+		});
 		this.setState({posts: posts});
 	}
 
-	// sortPostsById(desc = false){
-	// 	let posts = this.state.posts.sort((a, b) => a.id - b.id);
-	// 	this.setState({posts: posts});
-	// }
 
 	sortPostsById(desc = false){
 		let posts = this.state.posts.sort((a, b) => (desc ? a.id : b.id) - (desc ? b.id : a.id));
 		this.setState({posts: posts});
 	}
 
-	// sortPostsById(desc = false){
-	// 	if (desc === true){
-	// 		function compareNumbers(a, b){
-	// 	    	return a - b;
-	// 		}
-	// 	} else {
-	// 		function compareNumbers(a, b){
-	// 	    	return b - a;
-	// 		}
-	// 	}
-	// 	let posts = this.state.posts.sort(compareNumbers);
-	// 	this.setState({posts: posts});
-	// }
 }

@@ -37,6 +37,18 @@ export default class Posts extends React.Component{
 		    			<input className="form-control searchInput" type="text" ref="searchItem" />
 		    			<input className="btn btn-outline-success searchPost" type="submit" value="Search" />
 		      		</form>
+		      		<div>
+		      			<span>Title</span>
+		      			<span className="sort-feature" 
+		      					onClick={this.sortPostsByTitle.bind(this, false)}>&uarr;</span>
+        				<span className="sort-feature" 
+        						onClick={this.sortPostsByTitle.bind(this, true)}>&darr;</span>
+		      			<span>Id</span>
+				        <span className="sort-feature" 
+				        		onClick={this.sortPostsById.bind(this, true)}>&uarr;</span>
+				        <span className="sort-feature" 
+				        		onClick={this.sortPostsById.bind(this, false)}>&darr;</span>
+		      		</div>
                 	{ posts }
                 </div>
             </div>
@@ -47,8 +59,11 @@ export default class Posts extends React.Component{
 	    e.preventDefault();
 	    this.onSearch(this.refs.searchItem.value);
 	    var form = document.getElementById("search-post");
-	    console.log('search form submitted, value: ', this.refs.searchItem.value);
 	    form.reset();
+	}
+
+	onSearch(item){        
+	  this.setState({search: item});
 	}
 
 	searchPosts(posts) {
@@ -56,17 +71,44 @@ export default class Posts extends React.Component{
 	      return posts;
 	    } else {
 	      return posts.filter(post => {
-	        // if (post.title.search(this.state.search) >= 0) {
-	        if (post.title.indexOf(this.state.search) >= 0) {
+	        if (post.title && post.title.indexOf(this.state.search) >= 0) {
+	          console.log('search', post.title);
 	          return true;
 	        }
 	      })
 	    }
 	}
 
-	// Custom functions
-	onSearch(item){        
-	  this.setState({search: item});
-	  console.log('onSearch func state: ', this.state);
+	sortPostsByTitle(desc = false){
+		let posts = this.state.posts.sort(function(a, b){
+		    if(a.title < b.title) return desc ? 1 : -1;
+		    if(a.title > b.title) return desc ? -1 : 1;
+	    	return 0;
+		})
+		this.setState({posts: posts});
 	}
+
+	// sortPostsById(desc = false){
+	// 	let posts = this.state.posts.sort((a, b) => a.id - b.id);
+	// 	this.setState({posts: posts});
+	// }
+
+	sortPostsById(desc = false){
+		let posts = this.state.posts.sort((a, b) => (desc ? a.id : b.id) - (desc ? b.id : a.id));
+		this.setState({posts: posts});
+	}
+
+	// sortPostsById(desc = false){
+	// 	if (desc === true){
+	// 		function compareNumbers(a, b){
+	// 	    	return a - b;
+	// 		}
+	// 	} else {
+	// 		function compareNumbers(a, b){
+	// 	    	return b - a;
+	// 		}
+	// 	}
+	// 	let posts = this.state.posts.sort(compareNumbers);
+	// 	this.setState({posts: posts});
+	// }
 }

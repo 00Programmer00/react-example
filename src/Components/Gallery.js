@@ -13,10 +13,7 @@ export default class UserList extends Component {
     }
 
     onChange(e) {
-        this.setState({[e.target.name]: e.target.value});
-        let favorites = [e.target.value];
-        let filtered = this.state.photo.filter(ph => favorites.indexOf(ph.albumId) >= 0);
-        this.setState({photo: filtered});
+        this.setState({albumId: Number(e.target.value)});
     }
 
     albums(){
@@ -48,11 +45,9 @@ export default class UserList extends Component {
             isOpen,
         } = this.state;
         const images = [];
-        const photos = this.state.photo.map((item, i) => {
+        const photos = this.state.photo.filter(ph => !this.state.albumId || ph.albumId == this.state.albumId).map((item, i) => {
             images.push(item.url);
             let title = '';
-
-
 
             let album = this.state.albums ? this.state.albums.find(album => album.id === item.albumId) : null;
             title = album ? album.title : 'загрузка...';
@@ -82,7 +77,7 @@ export default class UserList extends Component {
                     <select
                         onChange={this.onChange}
                         value={this.state.albumId}
-                        className="form-control"
+                        className="form-control select"
                         name="albumId"
                     >
                         <option value="" disabled>Choose album</option>

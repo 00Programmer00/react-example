@@ -52,7 +52,7 @@ export default class Posts extends React.Component{
 	}
 
 	searchPosts(posts) {
-	    if (this.state.search == '') {
+	    if (this.state.search === '') {
 	      return posts;
 	    } else {
 	      return posts.filter(post => {

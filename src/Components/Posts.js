@@ -5,6 +5,8 @@ export default class Posts extends React.Component{
     constructor(props) {
 	    super(props);
 	    this.state = {posts: [], search: ''};
+
+	    this.onChange = this.onChange.bind(this);
 	} 
 
     componentWillMount() {
@@ -17,6 +19,14 @@ export default class Posts extends React.Component{
                 this.setState({posts: response.data});
             });
     }
+
+    onChange(e){
+    	axios.get('https://jsonplaceholder.typicode.com/posts?userId='+e.target.value)
+			.then((response) => {
+    			let userPosts = response.data;
+    			console.log(userPosts);
+		});
+	}
 
     render(){
 		const posts = this.searchPosts(this.state.posts).map((post, i) => {
@@ -37,6 +47,20 @@ export default class Posts extends React.Component{
 		    			<input className="form-control searchInput" type="text" ref="searchItem" />
 		    			<input className="btn btn-outline-success searchPost" type="submit" value="Search" />
 		      		</form>
+
+					<label className="control-label">Sort by users</label>
+					<select
+						onChange={this.onChange}
+						value={this.state.albumId}
+						className="form-control select"
+						name="albumId"
+					>
+						<option value="" disabled>Choose user</option>
+						<option value='1'>user 1</option>
+						<option value='2'>user 2</option>
+
+					</select>
+
                 	{ posts }
                 </div>
             </div>
@@ -46,7 +70,7 @@ export default class Posts extends React.Component{
   	handleSearch(e){
 	    e.preventDefault();
 	    this.onSearch(this.refs.searchItem.value);
-	    var form = document.getElementById("search-post");
+	    let form = document.getElementById("search-post");
 	    console.log('search form submitted, value: ', this.refs.searchItem.value);
 	    form.reset();
 	}
@@ -56,7 +80,6 @@ export default class Posts extends React.Component{
 	      return posts;
 	    } else {
 	      return posts.filter(post => {
-	        // if (post.title.search(this.state.search) >= 0) {
 	        if (post.title.indexOf(this.state.search) >= 0) {
 	          return true;
 	        }
@@ -64,8 +87,7 @@ export default class Posts extends React.Component{
 	    }
 	}
 
-	// Custom functions
-	onSearch(item){        
+	onSearch(item){
 	  this.setState({search: item});
 	  console.log('onSearch func state: ', this.state);
 	}

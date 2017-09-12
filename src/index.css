@@ -14,3 +14,13 @@ body {
   margin-bottom: 20px;
   width: 100px
 }
+
+.sort button{
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.sort{
+  font-size: 20px;
+  margin-bottom: 20px;
+}

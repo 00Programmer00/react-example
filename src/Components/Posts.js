@@ -69,29 +69,34 @@ export default class Posts extends React.Component{
 		    			<input className="form-control searchInput" type="text" ref="searchItem" />
 		    			<input className="btn btn-outline-success searchPost" type="submit" value="Search" />
 		      		</form>
-		      		<div>
-		      			<span>Title</span>
-		      			<span className="sort-feature" 
-		      					onClick={this.sortPostsByTitle.bind(this, false)}>&uarr;</span>
-        				<span className="sort-feature" 
-        						onClick={this.sortPostsByTitle.bind(this, true)}>&darr;</span>
-		      			<span>Id</span>
-				        <span className="sort-feature" 
-				        		onClick={this.sortPostsById.bind(this, true)}>&uarr;</span>
-				        <span className="sort-feature" 
-				        		onClick={this.sortPostsById.bind(this, false)}>&darr;</span>
-		      		</div>
+		      		<div className="row sort">
+						<div className="col-md-6 col-md-offset-5">
 
-					<label className="control-label">Filter by users</label>
-					<select
-						onChange={this.onChange}
-						value={this.state.albumId}
-						className="form-control select"
-						name="albumId"
-					>
-						<option value="" disabled>Choose user</option>
-						{options}
-					</select>
+						<span>Title : </span>
+		      			<button className="sort-feature" onClick={this.sortPostsByTitle.bind(this, false)}>&uarr;</button>
+        				<button className="sort-feature" onClick={this.sortPostsByTitle.bind(this, true)}>&darr;</button>
+		      			<span>Id : </span>
+				        <button className="sort-feature" onClick={this.sortPostsById.bind(this, true)}>&uarr;</button>
+				        <button className="sort-feature" onClick={this.sortPostsById.bind(this, false)}>&darr;</button>
+						</div>
+					</div>
+
+
+					<div className="row">
+						<div className="col-md-6 col-md-offset-6">
+							<label className="control-label">Filter by users</label>
+							<select
+								onChange={this.onChange}
+								value={this.state.albumId}
+								className="form-control select"
+								name="albumId"
+							>
+								<option value="" disabled>Choose user</option>
+                                {options}
+							</select>
+						</div>
+
+					</div>
                 	{ posts }
                 	<div className="row">
 						<div className="col-md-6 col-md-offset-4">
